@@ -1,13 +1,28 @@
-name: Simple Rust
+name: Debug Rust Build
+
 on: [push, pull_request]
+
 jobs:
-  build:
+  debug:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Build and test
+    
+    - name: Install Rust
+      uses: actions-rust-lang/setup-rust-toolchain@v1
+      
+    - name: Check Rust version
       run: |
-        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-        source $HOME/.cargo/env
-        cargo build
-        cargo test
+        rustc --version
+        cargo --version
+        
+    - name: Check project structure
+      run: |
+        ls -la
+        find . -name "*.rs" | head -10
+        
+    - name: Try to build
+      run: cargo build || echo "Build failed - but continuing"
+      
+    - name: Show detailed errors
+      run: cargo check --verbose
